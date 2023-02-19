@@ -27,8 +27,8 @@ router
     createProduct
   )
   .delete("/deleteProduct/:id", auth, deleteProduct)
-  .put("/updateProduct", auth, updateProduct)
-  .put("/updateProductPoster", auth, upload('products').single("poster"), updateProductPoster)
+  .put("/updateProduct/:id", auth, updateProduct)
+  .put("/updateProductPoster/:id", auth, upload('products').single("poster"), updateProductPoster)
   .put("/updateProductGallery", auth, upload('products').array("gallery",5), updateProductGallery)
   .delete("/deleteProductGaleryPhoto", auth, deleteProductGaleryPhoto);
 
