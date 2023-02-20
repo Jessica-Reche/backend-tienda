@@ -450,7 +450,8 @@ productMethod.updateProduct = async (req, res) => {
       if (req.body.stock) updatedProduct.stock = req.body.stock;
       if (req.body.sku) updatedProduct.sku = req.body.sku;
       if (req.body.rating) updatedProduct.rating = req.body.rating;
-    
+     
+
       await updatedProduct.save();
       return res.status(200).json({ message: "Product updated successfully", product: updatedProduct })
 
@@ -487,12 +488,23 @@ productMethod.updateProductPoster = async (req, res) => {
     if (!product) missingFieldsMsgs.push("No product found");
 
     if (missingFieldsMsgs.length) {
-      fs.unlinkSync(req.file.path);
+      if (req.file) {
+        fs.unlinkSync(req.file.path);
+      }
+
+
+
       return sendErrorResponse(req, res, missingFieldsMsgs, 400);
     }
 
     try {
-      const poster = await updateFilePoster(req.file, product);
+      if (product && req.file) {
+        const poster = await updateFilePoster(req.file, product);
+        if (poster) {
+          return sendSuccessMessage(res, "Poster was updated successfully");
+        }
+      }
+
 
       if (poster) {
         return sendSuccessMessage(res, "Poster was updated successfully");
