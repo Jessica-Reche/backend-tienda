@@ -216,8 +216,6 @@ productMethod.getProducts = async (req, res) => {
   }
 };
 
-
-
 /**
  * Gets a product in the database and returns the product
  *

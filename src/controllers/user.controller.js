@@ -20,9 +20,6 @@ async function getRol(_id) {
   }
 };
 
-
-
-
 userMethods.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await getUser({ email });
