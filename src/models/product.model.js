@@ -47,6 +47,11 @@ const productSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  updated_at: {
+    type: Date,
+    default: Date.now,
+  },
+  
 });
 
 module.exports = model("Product", productSchema);

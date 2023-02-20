@@ -411,58 +411,61 @@ productMethod.deleteProductGaleryPhoto = async (req, res) => {
  * @returns  {Object} returns an object with the status, message and the product created
  */
 productMethod.updateProduct = async (req, res) => {
-  if(req.body){
-  let { name, description, price, discount, stock, sku, rating } = req.body;
-  const { id } = req.params;
-  const product = await getProduct({ _id: id });
-  const permission = acc.can(req.user.rol.name).updateAny("product").granted;
-  const missingFieldsMsgs = [];
-  if (!permission)
-    res.status(401).json({ message: "You don't have permission to do this" });
-  if (!productID) missingFieldsMsgs.push("The id is required");
-  if (!product) missingFieldsMsgs.push("No product found");
-  if (sku && sku !== product.sku)
-    missingFieldsMsgs.push("The SKU is already in use");
-  if (!name) name = product.name;
-  if (!description) description = product.description;
-  if (!price) price = product.price;
-  if (!discount) discount = product.discount;
-  if (!stock) stock = product.stock;
-  if (!sku) sku = product.sku;
-  if (!rating) rating = product.rating;
+  if (req.body) {
+    console.log(req.body)
+    const permission = acc.can(req.user.rol.name).updateAny("product").granted;
+    const { id } = req.params;
+    const product = await getProduct({ _id: id });
+    const { sku } = req.body;
+    const errors = [];
 
-  if (missingFieldsMsgs.length) {
-    return sendErrorResponse(res, missingFieldsMsgs, 400);
+    if (!permission) {
+      errors.push("You don't have permission to update this product");
+    };
+
+    if (!id) {
+      errors.push("The product ID is required");
+    };
+
+    if (!product) {
+      errors.push("No product found with the given ID");
+    };
+
+    if (sku && sku !== product.sku) {
+      const existingProduct = await getProduct({ sku: req.body.sku });
+      if (existingProduct) {
+        errors.push("The SKU is already in use by another product");
+      };
+    };
+
+    if (errors.length) {
+      return res.status(400).json({ errors });
+    };
+
+    try {
+      const updatedProduct = await Product.findOne({ _id: id });
+
+      if (req.body.name) updatedProduct.name = req.body.name;
+      if (req.body.description) updatedProduct.description = req.body.description;
+      if (req.body.price) updatedProduct.price = req.body.price;
+      if (req.body.discount) updatedProduct.discount = req.body.discount;
+      if (req.body.stock) updatedProduct.stock = req.body.stock;
+      if (req.body.sku) updatedProduct.sku = req.body.sku;
+      if (req.body.rating) updatedProduct.rating = req.body.rating;
+    
+      await updatedProduct.save();
+      return res.status(200).json({ message: "Product updated successfully", product: updatedProduct })
+
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ errors: ["There was a problem updating the product"] })
+    }
+  } else {
+    return res.status(400).json({ errors: ["Missing fields"] });
   }
 
-  try {
-    await Product.updateOne({
-      name,
-      description,
-      price,
-      discount,
-      stock,
-      sku,
-    });
-
-    return sendSuccessMessage(res, "Product was updated successfully", product);
-  } catch (error) {
-    console.log(error);
-    return sendErrorResponse(
-      res,
-      "There was a problem updating the product",
-      400
-    );
-  }
-  }else{
-    return sendErrorResponse(
-      res,
-      "There was a problem updating the product, missing fields",
-      400
-    );
-  }
- 
 };
+
 /**
  * Updates the poster of the product in his path and in the database
  *
@@ -471,17 +474,18 @@ productMethod.updateProduct = async (req, res) => {
  * @returns
  */
 productMethod.updateProductPoster = async (req, res) => {
+
   if (req.body) {
 
     const permission = acc.can(req.user.rol.name).updateAny("product").granted;
-    const { productID } = req.body;
-    const product = await getProduct({ _id: productID });
+    const { id } = req.params;
+    const product = await getProduct({ _id: id });
     const missingFieldsMsgs = [];
 
     if ((req.file && !permission) || !permission)
       res.status(401).json({ message: "You don't have permission to do this" });
     if (!req.file) missingFieldsMsgs.push("You must upload a poster");
-    if (!productID) missingFieldsMsgs.push("The productID is required");
+    if (!id) missingFieldsMsgs.push("The productID is required");
     if (!product) missingFieldsMsgs.push("No product found");
 
     if (missingFieldsMsgs.length) {
@@ -498,6 +502,7 @@ productMethod.updateProductPoster = async (req, res) => {
     } catch (error) {
       console.log(error);
       return sendErrorResponse(
+        req,
         res,
         "There was a problem updating the poster",
         400
@@ -512,7 +517,7 @@ productMethod.updateProductPoster = async (req, res) => {
     );
 
 
-  }else{
+  } else {
     return sendErrorResponse(
       req,
       res,
@@ -522,6 +527,8 @@ productMethod.updateProductPoster = async (req, res) => {
   }
 
 };
+
+
 productMethod.updateProductGallery = async (req, res) => {
   const files = req.files;
   const permission = acc.can(req.user.rol.name).updateAny("product").granted;
