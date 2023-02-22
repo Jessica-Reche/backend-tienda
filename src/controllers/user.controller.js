@@ -24,7 +24,7 @@ userMethods.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await getUser({ email });
   if (!user) {
-    return res.status(404).json({ status: false, message: "Email or pasword is incorrect" });
+    return res.status(401).json({ status: false, message: "Email or pasword is incorrect" });
   }
   const verifyPassword = await user.verifyPassword(password);
   if (!verifyPassword) {
