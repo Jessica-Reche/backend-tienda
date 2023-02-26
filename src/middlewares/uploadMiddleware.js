@@ -16,22 +16,8 @@ function ramdomName(_n, _ext, dest) {
     ramdomName(_n, _ext);
     return false;
   }
-
   return filename + _ext;
-}
-// const base64Middleware = (req, res, next) => {
-//   if (req.body.file) {
-//     const bufferStream = new Base64Decode();
-//     bufferStream.end(req.body.file);
-//     req.file = {
-//       buffer: bufferStream.read(),
-//       originalname: "image.jpeg",
-//       mimetype: "image/jpeg",
-//       encoding: "7bit"
-//     }
-//   }
-//   next();
-// };
+};
 const upload = (dest) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -44,7 +30,6 @@ const upload = (dest) => {
   return multer({ storage });
 };
 
-module.exports ={
+module.exports = {
   upload,
-  // base64Middleware
 };
