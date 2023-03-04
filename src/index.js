@@ -1,5 +1,4 @@
 const app = require('./app')
- require('./middlewares/authmiddleware');
 require('dotenv').config();
 require('./database');
 
