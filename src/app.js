@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const path = require('path');
 const morgan = require('morgan');
 require('./config/config');
+require('../middlewares/authmiddleware'); 
 const app = express();
 
 
