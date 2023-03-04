@@ -4,14 +4,14 @@ const helmet = require('helmet');
 const path = require('path');
 const morgan = require('morgan');
 require('./config/config');
-require('./middlewares/authmiddleware');
-const app = express(); 
+require('./middlewares/authMiddleware');
+const app = express();
 
 //Set more security to requests
 
 app.use(helmet({
-    crossOriginResourcePolicy: false,
-  }));
+  crossOriginResourcePolicy: false,
+}));
 //Allow cors
 app.use(cors());
 //Set module for helper requests information
