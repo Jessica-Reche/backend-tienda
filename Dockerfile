@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copiamos la carpeta backend-tienda-master
-COPY ./backend-tienda-master /app/
+COPY . /app/
 
 
 
