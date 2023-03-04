@@ -10,8 +10,10 @@ COPY package*.json ./
 # Instalamos las dependencias de la aplicación
 RUN npm install
 
-# Copiamos el resto de los archivos al contenedor
-COPY . .
+# Copiamos la carpeta backend-tienda-master
+COPY ./backend-tienda-master /app/
+
+
 
 # Exponemos el puerto 4000
 EXPOSE 4000
