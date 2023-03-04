@@ -1,4 +1,4 @@
-# Seleccionamos la imagen base de Node.js desde Docker Hub
+# imagen compatible con bycript
 FROM node:14
 
 # Establecemos el directorio de trabajo dentro del contenedor
