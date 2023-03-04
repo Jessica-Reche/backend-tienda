@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {getRol,getRols,createRol,updateRol,deleteRol} 
 = require('../controllers/rol.controller');
-const auth = require("../middlewares/authMiddleware");
+const auth = require("../middlewares/authMiddleware"); 
 
 
 //Routes for the products
