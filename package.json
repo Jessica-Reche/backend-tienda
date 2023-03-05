@@ -32,5 +32,8 @@
     "railway": "^2.0.17",
     "save": "^2.9.0",
     "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
   }
 }
