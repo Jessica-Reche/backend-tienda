@@ -9,7 +9,7 @@ router
     .get('/users', auth, getUsers)
     .post('/login', login)
     .post('/register', register)
-    .delete('/deleteUser', auth, deleteUser)
+    .delete('/deleteUser/:id', auth, deleteUser)
     .put('/updateUser', auth, updateUser)
 
 module.exports = router;
