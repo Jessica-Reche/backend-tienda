@@ -20,6 +20,26 @@ async function getRol(_id) {
   }
 };
 
+//get users
+userMethods.getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    if (users) {
+      return res.status(200).json({
+        status: true,
+        message: "Users found",
+        users,
+      });
+    }
+  } catch (error) {
+    return res.status(404).json({
+      status: false,
+      message: "There are no users",
+    });
+  }
+};
+
+//Login
 userMethods.login = async (req, res) => {
   const { email, password } = req.body;
   const user = await getUser({ email });
@@ -47,7 +67,7 @@ userMethods.login = async (req, res) => {
 
 
 };
-
+//Register
 userMethods.register = async (req, res) => {
   const { rolID, username, email, password, name } = req.body;
 
@@ -133,7 +153,7 @@ userMethods.register = async (req, res) => {
   }
 };
 
-
+//authenticate
 userMethods.authenticate = (req, res) => {
   try {
     const token = req.headers["authorization"];
