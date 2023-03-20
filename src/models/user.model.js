@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const UserSchema = new Schema({
   rol: {
     type: Object,
-    default: { rolID: "63e54ca6b6d8257a189cbe2e", name: "client" },
+    default: { rolID: "63ed70c9bc14ae28b2162da1", name: "client" },
   }
   ,
   username: {
