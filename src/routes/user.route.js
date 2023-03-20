@@ -10,7 +10,7 @@ router
     .post('/login', login)
     .post('/register', register)
     .delete('/deleteUser/:id', auth, deleteUser)
-    .put('/updateUser', auth, updateUser)
+    .put('/updateUser/:id', auth, updateUser)
 
 module.exports = router;
 

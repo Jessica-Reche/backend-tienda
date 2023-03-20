@@ -217,19 +217,21 @@ userMethods.deleteUser = async (req, res) => {
 
 //Update user
 userMethods.updateUser = async (req, res) => {
-  const { userID, name, username, email, password, rolID } = req.body;
+  const { name, username, email, password, rolID } = req.body;
+  const { id } = req.params;
 
-  const user = await getUser({ _id: userID });
+
+  const user = await getUser({ _id: id });
   const permission = acc.can(req.user.rol.name).updateAny("user").granted;
   const missingFieldsMsgs = [];
 
   if (!permission)
     missingFieldsMsgs.push("You don't have permission to do this");
-  if (!userID) missingFieldsMsgs.push("The id is required");
+  if (!id) missingFieldsMsgs.push("The id is required");
   if (!user) missingFieldsMsgs.push("No user found");
   if (username) {
     const verifyUsername = await getUser({ username });
-    if (verifyUsername && verifyUsername._id.toString() !== userID) {
+    if (verifyUsername && verifyUsername._id.toString() !== id) {
       missingFieldsMsgs.push("The username is already taken");
     } else {
       user.username = username;
@@ -237,7 +239,7 @@ userMethods.updateUser = async (req, res) => {
   }
   if (email) {
     const verifyEmail = await getUser({ email });
-    if (verifyEmail && verifyEmail._id.toString() !== userID) {
+    if (verifyEmail && verifyEmail._id.toString() !== id) {
       missingFieldsMsgs.push("The email is already taken");
     } else {
       user.email = email;
