@@ -2,8 +2,11 @@ const userMethods = {};
 require("dotenv").config();
 const User = require("../models/user.model");
 const Rol = require("../models/rol.model");
+const acc = require("../middlewares/accessControl");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+
+
 
 async function getUser(param) {
   try {
@@ -189,9 +192,17 @@ userMethods.authenticate = (req, res) => {
 //Delete user
 userMethods.deleteUser = async (req, res) => {
   try {
+    const permission = acc.can(req.user.rol.name).updateAny("user").granted;
     const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
-    if (user) {
+    if(!permission){
+      return res.status(400).json({
+        status: false,
+        message: "You don't have permission to delete users",
+      });
+    }
+    
+    if (user && permission) {
       const userDeleted = user.delete();
       if (userDeleted) {
         return res.status(200).json({
