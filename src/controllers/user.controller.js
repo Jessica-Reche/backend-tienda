@@ -278,19 +278,31 @@ userMethods.updateUser = async (req, res) => {
   }
 
   if (missingFieldsMsgs.length) {
-    return sendErrorResponse(res, missingFieldsMsgs, 400);
+    return res.status(400).json({
+      status: false,
+      message: missingFieldsMsgs,
+    });
+
   }
 
   try {
     await user.save();
-    return sendSuccessMessage(res, "User was updated successfully", user);
+    return res.status(200).json({
+      status: true,
+      message: "User updated successfully",
+      user,
+    });
+
+
   } catch (error) {
     console.log(error);
-    return sendErrorResponse(
-      res,
-      "There was a problem updating the user",
-      400
-    );
+    return res.status(400).json({
+      status: false,
+      message: "There was an error, please try again",
+    });
+    
+
+
   }
 };
 
