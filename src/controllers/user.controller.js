@@ -266,6 +266,7 @@ userMethods.updateUser = async (req, res) => {
     user.name = name;
   }
   if (rolID) {
+    console.log("este es el rolID: "+rolID);
     const rol = await getRol(rolID);
     if (rol) {
       user.rol = {
@@ -300,7 +301,7 @@ userMethods.updateUser = async (req, res) => {
       status: false,
       message: "There was an error, please try again",
     });
-    
+
 
 
   }
