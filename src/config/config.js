@@ -6,16 +6,5 @@ const rols ={
   CLIENT: "client",
 }
 
-const category = {
-  TARTAS:"tartas",
-  CUPCAKES:"cupcakes",
-  DONNUTS:"donnuts",
-  COOKIES:"cookies",
-  CAJASDULCES:"cajasdulces",
 
-}
-
-module.exports = {
-  rols,
-  category
-};
+module.exports = rols;
