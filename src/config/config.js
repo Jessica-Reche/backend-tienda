@@ -6,13 +6,16 @@ const rols ={
   CLIENT: "client",
 }
 
-// const categories = {
-//   TARTAS:{CLASICAS:"clasicas", PERSONALIZADAS:"personalizadas"},
-//   CUPCAKES:"cupcakes",
-//   DONNUTS:"donnuts",
-//   COOKIES:"cookies",
-//   CAJASDULCES:"cajasdulces",
+const category = {
+  TARTAS:"tartas",
+  CUPCAKES:"cupcakes",
+  DONNUTS:"donnuts",
+  COOKIES:"cookies",
+  CAJASDULCES:"cajasdulces",
 
-// }
+}
 
-module.exports = rols;
+module.exports = {
+  rols,
+  category
+};

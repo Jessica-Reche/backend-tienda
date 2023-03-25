@@ -244,7 +244,7 @@ productMethod.createProduct = async (req, res) => {
   if (req.body) {
 
     const permission = acc.can(req.user.rol.name).createAny("product").granted;
-    const { name, description, price, discount, stock, sku } = req.body;
+    const { name, description, price, discount, stock, sku, category } = req.body;
     const verifySKU = await getProduct({ sku });
     const gallery = req.files && req.files.gallery ? convertGallery(req.files.gallery) : [];
     const missingFieldsMsgs = [];
@@ -259,6 +259,7 @@ productMethod.createProduct = async (req, res) => {
 
     if (!stock) missingFieldsMsgs.push("Stock is required");
     if (!sku) missingFieldsMsgs.push("SKU is required");
+    if (!category) missingFieldsMsgs.push("Category is required");
     if (!req.files || !req.files.poster) {
       return missingFieldsMsgs.push("Poster is required");
     }
@@ -286,6 +287,7 @@ productMethod.createProduct = async (req, res) => {
         stock,
         sku,
         rating,
+        category,
       });
       await product.save();
       return sendSuccessMessage(res, "Product created successfully");
@@ -450,6 +452,7 @@ productMethod.updateProduct = async (req, res) => {
       if (req.body.stock) updatedProduct.stock = req.body.stock;
       if (req.body.sku) updatedProduct.sku = req.body.sku;
       if (req.body.rating) updatedProduct.rating = req.body.rating;
+      if (req.body.category) updatedProduct.category = req.body.category;
      
 
       await updatedProduct.save();

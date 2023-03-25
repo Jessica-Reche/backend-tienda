@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const category = require("../config/config");
 
 const postSchema = new Schema({
   filename: { type: String, required: true },
@@ -51,6 +52,12 @@ const productSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  category: {
+    type:String,
+    enum: category,
+    required: true,
+  },
+
   
 });
 

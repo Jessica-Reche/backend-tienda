@@ -193,7 +193,7 @@ userMethods.authenticate = (req, res) => {
 //Delete user
 userMethods.deleteUser = async (req, res) => {
   try {
-    const permission = acc.can(req.user.rol.name).updateAny("user").granted;
+    const permission = acc.can(req.user.rol.name).deleteAny("user").granted;
     const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
     if(!permission){
@@ -231,7 +231,6 @@ userMethods.deleteUser = async (req, res) => {
 userMethods.updateUser = async (req, res) => {
   const { name, username, email, password, rolID } = req.body;
   const { id } = req.params;
-
 
   const user = await getUser({ _id: id });
   const permission = acc.can(req.user.rol.name).updateAny("user").granted;
