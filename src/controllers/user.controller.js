@@ -83,6 +83,34 @@ userMethods.register = async (req, res) => {
     });
   }
 
+  //validación de email
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({
+      status: false,
+      message: "Invalid email",
+    });
+
+  }
+  //validación de contraseña
+  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/g;
+  if (!passwordRegex.test(password)) {
+    return res.status(400).json({
+      status: false,
+      message: "Invalid password",
+    });
+  }
+
+  //validación de nombre
+  const nameRegex = /^[a-zA-Z ]{2,30}$/g;
+  if (!nameRegex.test(name)) {
+    return res.status(400).json({
+      status: false,
+      message: "Invalid name",
+    });
+  }
+  
+
   try {
     // Obtener el rol si se proporcionó un ID de rol válido
     let rol = null;
