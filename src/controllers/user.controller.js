@@ -24,9 +24,8 @@ async function getRol(_id) {
   }
 };
 
-async function verifiRegister(email, username, password, name) {
+async function verifiCredentials(email, username, password, name) {
    // Verificar que se hayan proporcionado los campos requeridos
-
    const errorMessages = [];
 
 
@@ -53,7 +52,7 @@ async function verifiRegister(email, username, password, name) {
       return errorMessages.push("Password must contain at least one uppercase letter");
     case !password.match(/[0-9]/g):
       return errorMessages.push("Password must contain at least one number");
-    case !password.match(/[^a-zA-Z\d]/g):
+    case !password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g):
       return errorMessages.push( "Password must contain at least one special character. Example: .,;");
 
 
@@ -134,7 +133,7 @@ userMethods.register = async (req, res) => {
   const { rolID, username, email, password, name } = req.body;
 
   // Verificar que se hayan proporcionado los campos requeridos
- const isRegister = verifiRegister(email, username, password, name);
+ const isRegister = verifiCredentials(email, username, password, name);
  if(!isRegister){
     return res.status(400).json({ status: false, message: isRegister });
   }
