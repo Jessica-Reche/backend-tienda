@@ -81,6 +81,46 @@ userMethods.register = async (req, res) => {
       status: false,
       message: "Please fill in all required fields",
     });
+  };
+
+
+  if (username.length < 8) {
+    return res.status(400).json({
+      status: false,
+      message: "Username must be at least 6 characters",
+    });
+  }
+
+  switch (username) {
+    case !username:
+      return res.status(400).json({
+        status: false,
+        message: "Username is required",
+      });
+
+    case username.length < 6:
+      return res.status(400).json({ status: false, message: "Username must be at least 6 characters" });
+    case username.length > 20:
+      return res.status(400).json({ status: false, message: "Username must be less than 20 characters" });
+    
+  }
+  switch (password) {
+    case !password:
+      return res.status(400).json({ status: false, message: "Password is required" });
+    case password.length < 8:
+      return res.status(400).json({ status: false, message: "Password must be at least 8 characters" });
+    case password.length > 20:
+      return res.status(400).json({ status: false, message: "Password must be less than 20 characters" });
+    case !password.match(/[a-z]/g):
+      return res.status(400).json({ status: false, message: "Password must contain at least one lowercase letter" });
+    case !password.match(/[A-Z]/g):
+      return res.status(400).json({ status: false, message: "Password must contain at least one uppercase letter" });
+    case !password.match(/[0-9]/g):
+      return res.status(400).json({ status: false, message: "Password must contain at least one number" });
+    case !password.match(/[^a-zA-Z\d]/g):
+      return res.status(400).json({ status: false, message: "Password must contain at least one special character. Example: .,;" });
+
+
   }
 
   //validación de email
@@ -88,18 +128,21 @@ userMethods.register = async (req, res) => {
   if (!emailRegex.test(email)) {
     return res.status(400).json({
       status: false,
-      message: "Invalid email",
+      message: "Invalid email. Example: example@mail.com   "   
     });
 
-  }
+  };
   //validación de contraseña
-  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/g;
-  if (!passwordRegex.test(password)) {
-    return res.status(400).json({
-      status: false,
-      message: "Invalid password",
-    });
-  }
+  // const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/g;
+  // if (!passwordRegex.test(password)) {
+  //   return res.status(400).json({
+  //     status: false,
+  //     message: "Invalid password",
+  //   });
+  // };
+
+
+
 
   //validación de nombre
   const nameRegex = /^[a-zA-Z ]{2,30}$/g;
@@ -108,7 +151,7 @@ userMethods.register = async (req, res) => {
       status: false,
       message: "Invalid name",
     });
-  }
+  };
   
 
   try {
