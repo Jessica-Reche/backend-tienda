@@ -24,38 +24,37 @@ async function getRol(_id) {
   }
 };
 
-async function verifiRegister(email, username, password) {
+async function verifiRegister(email, username, password, name) {
    // Verificar que se hayan proporcionado los campos requeridos
+
+   const errorMessages = [];
 
 
   switch (username) {
     case !username:
-      return res.status(400).json({
-        status: false,
-        message: "Username is required",
-      });
+      return errorMessages.push("Username is required");
 
     case username.length < 6:
-      return res.status(400).json({ status: false, message: "Username must be at least 6 characters" });
+      return errorMessages.push("Username must be at least 6 characters");
     case username.length > 20:
-      return res.status(400).json({ status: false, message: "Username must be less than 20 characters" });
+      return errorMessages.push("Username must be less than 20 characters");
     
   }
   switch (password) {
     case !password:
-      return res.status(400).json({ status: false, message: "Password is required" });
+      return errorMessages.push("Password is required");
     case password.length < 8:
-      return res.status(400).json({ status: false, message: "Password must be at least 8 characters" });
+      return errorMessages.push("Password must be at least 8 characters");
     case password.length > 20:
-      return res.status(400).json({ status: false, message: "Password must be less than 20 characters" });
+      return errorMessages.push("Password must be less than 20 characters");
     case !password.match(/[a-z]/g):
-      return res.status(400).json({ status: false, message: "Password must contain at least one lowercase letter" });
+      return errorMessages.push("Password must contain at least one lowercase letter");
     case !password.match(/[A-Z]/g):
-      return res.status(400).json({ status: false, message: "Password must contain at least one uppercase letter" });
+      return errorMessages.push("Password must contain at least one uppercase letter");
     case !password.match(/[0-9]/g):
-      return res.status(400).json({ status: false, message: "Password must contain at least one number" });
+      return errorMessages.push("Password must contain at least one number");
     case !password.match(/[^a-zA-Z\d]/g):
-      return res.status(400).json({ status: false, message: "Password must contain at least one special character. Example: .,;" });
+      return errorMessages.push( "Password must contain at least one special character. Example: .,;");
 
 
   }
@@ -63,12 +62,23 @@ async function verifiRegister(email, username, password) {
   //validación de email
   const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
   if (!emailRegex.test(email)) {
-    return res.status(400).json({
-      status: false,
-      message: "Invalid email. Example: example@mail.com   "   
-    });
+    return errorMessages.push("Invalid email. Example: example@mail.com "   );
 
   };
+
+    //validación de nombre
+    const nameRegex = /^[a-zA-Z ]{2,30}$/g;
+    if (!nameRegex.test(name)) {
+      return errorMessages.push("Invalid name. Example: John Doe"   );
+    };
+  if (errorMessages.length > 0) {
+    return errorMessages;
+  }
+
+    return true;
+
+  
+  
 };
 
 
@@ -124,29 +134,12 @@ userMethods.register = async (req, res) => {
   const { rolID, username, email, password, name } = req.body;
 
   // Verificar que se hayan proporcionado los campos requeridos
-  verifiRegister(email, username, password);
-
- 
-  //validación de contraseña
-  // const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/g;
-  // if (!passwordRegex.test(password)) {
-  //   return res.status(400).json({
-  //     status: false,
-  //     message: "Invalid password",
-  //   });
-  // };
+ const isRegister = verifiRegister(email, username, password, name);
+ if(!isRegister){
+    return res.status(400).json({ status: false, message: isRegister });
+  }
 
 
-
-
-  //validación de nombre
-  const nameRegex = /^[a-zA-Z ]{2,30}$/g;
-  if (!nameRegex.test(name)) {
-    return res.status(400).json({
-      status: false,
-      message: "Invalid name",
-    });
-  };
   
 
   try {
