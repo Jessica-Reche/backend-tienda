@@ -28,6 +28,9 @@ async function verifiCredentials(email, username, password, name) {
    // Verificar que se hayan proporcionado los campos requeridos
    const errorMessages = [];
 
+   if (! email && ! username && ! password && ! name) {
+      return errorMessages.push("All fields are required");
+    }
 
   switch (username) {
     case !username:
