@@ -3,7 +3,6 @@ require("dotenv").config();
 const User = require("../models/user.model");
 const Rol = require("../models/rol.model");
 const acc = require("../middlewares/accesControl");
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -22,65 +21,6 @@ async function getRol(_id) {
   } catch (error) {
     return false;
   }
-};
-
-async function verifiCredentials(email, username, password, name) {
-   // Verificar que se hayan proporcionado los campos requeridos
-   const errorMessages = [];
-
-   if (! email && ! username && ! password && ! name) {
-      return errorMessages.push("All fields are required");
-    }
-
-  switch (username) {
-    case !username:
-      return errorMessages.push("Username is required");
-
-    case username.length < 6:
-      return errorMessages.push("Username must be at least 6 characters");
-    case username.length > 20:
-      return errorMessages.push("Username must be less than 20 characters");
-    
-  }
-  switch (password) {
-    case !password:
-      return errorMessages.push("Password is required");
-    case password.length < 8:
-      return errorMessages.push("Password must be at least 8 characters");
-    case password.length > 20:
-      return errorMessages.push("Password must be less than 20 characters");
-    case !password.match(/[a-z]/g):
-      return errorMessages.push("Password must contain at least one lowercase letter");
-    case !password.match(/[A-Z]/g):
-      return errorMessages.push("Password must contain at least one uppercase letter");
-    case !password.match(/[0-9]/g):
-      return errorMessages.push("Password must contain at least one number");
-    case !password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g):
-      return errorMessages.push( "Password must contain at least one special character. Example: .,;");
-
-
-  }
-
-  //validación de email
-  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-  if (!emailRegex.test(email)) {
-    return errorMessages.push("Invalid email. Example: example@mail.com "   );
-
-  };
-
-    //validación de nombre
-    const nameRegex = /^[a-zA-Z ]{2,30}$/g;
-    if (!nameRegex.test(name)) {
-      return errorMessages.push("Invalid name. Example: John Doe"   );
-    };
-  if (errorMessages.length > 0) {
-    return errorMessages;
-  }
-
-    return true;
-
-  
-  
 };
 
 
@@ -131,48 +71,64 @@ userMethods.login = async (req, res) => {
 
 
 };
-//Register
+const validateRegistration = async ({ rolID, username, email, password, name }) => {
+  const errors = [];
+
+  if (!username) errors.push("Username is required");
+  if (!email) errors.push("Email is required");
+  if (!password) errors.push("Password is required");
+
+  if (password && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,20}$/.test(password)) {
+    errors.push("Invalid password. Example: Example123!");
+  }
+
+  if (email && !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    errors.push("Invalid email. Example: example@gmail.com");
+  }
+
+  if (name && !/^[a-zA-Z ]{2,30}$/.test(name)) {
+    errors.push("Invalid name. Example: John Doe");
+  }
+
+  if (rolID) {
+    const rol = await getRol(rolID);
+    if (!rol) {
+      errors.push("Invalid rol ID");
+    }
+  }
+
+  if (username) {
+    const existingUsername = await getUser({ username });
+    if (existingUsername) {
+      errors.push("Username is already taken");
+    }
+  }
+
+  if (email) {
+    const existingEmail = await getUser({ email });
+    if (existingEmail) {
+      errors.push("Email is already taken");
+    }
+  }
+
+  return errors;
+};
+
+
+
 userMethods.register = async (req, res) => {
   const { rolID, username, email, password, name } = req.body;
 
-  // Verificar que se hayan proporcionado los campos requeridos
- const isRegister = verifiCredentials(email, username, password, name);
- if(!isRegister){
-    return res.status(400).json({ status: false, message: isRegister });
+  const errors = await validateRegistration({ rolID, username, email, password, name });
+  if (errors.length) {
+    const errorMessage = errors.join(", ");
+    return res.status(400).json({
+      status: false,
+      message: errorMessage,
+    });
   }
-
-
   
-
   try {
-    // Obtener el rol si se proporcionó un ID de rol válido
-    let rol = null;
-    if (rolID) {
-      rol = await getRol(rolID);
-      if (!rol) {
-        return res.status(400).json({
-          status: false,
-          message: "Invalid rol ID",
-        });
-      }
-    }
-
-    // Verificar que el nombre de usuario y el correo electrónico no estén en uso
-    const existingUsername = await getUser({ username });
-    if (existingUsername) {
-      return res.status(400).json({
-        status: false,
-        message: "The username is already taken",
-      });
-    }
-    const existingEmail = await getUser({ email });
-    if (existingEmail) {
-      return res.status(400).json({
-        status: false,
-        message: "The email is already taken",
-      });
-    }
-
     // Encriptar la contraseña
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -190,7 +146,8 @@ userMethods.register = async (req, res) => {
     }
 
     // Agregar el rol si se proporcionó un ID de rol válido
-    if (rol) {
+    if (rolID) {
+      const rol = await getRol(rolID);
       newUser.rol = {
         rolID: rol._id,
         name: rol.name,
@@ -217,6 +174,10 @@ userMethods.register = async (req, res) => {
     });
   }
 };
+
+
+
+
 
 //authenticate
 userMethods.authenticate = (req, res) => {
@@ -257,7 +218,7 @@ userMethods.deleteUser = async (req, res) => {
     const permission = acc.can(req.user.rol.name).deleteAny("user").granted;
     const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
-    if(!permission){
+    if (!permission) {
       return res.status(400).json({
         status: false,
         message: "You don't have permission to delete users",
@@ -326,7 +287,7 @@ userMethods.updateUser = async (req, res) => {
     user.name = name;
   }
   if (rolID) {
-    console.log("este es el rolID: "+rolID);
+    console.log("este es el rolID: " + rolID);
     const rol = await getRol(rolID);
     if (rol) {
       user.rol = {
