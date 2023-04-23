@@ -1,4 +1,5 @@
 const express = require('express');
+const Stripe = require('stripe');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
@@ -20,9 +21,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //Define public folder
 app.use(express.static(path.join(__dirname, '/../public')));
+
 //Configure routes
 app.use('/user', require('./routes/user.route'));
 app.use('/rol', require('./routes/rol.route'));
 app.use('/product', require('./routes/product.route'));
+app.use('/stripe', require('./routes/stripe.route'));
 
 module.exports = app;
