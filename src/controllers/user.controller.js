@@ -114,8 +114,6 @@ const validateRegistration = async ({ rolID, username, email, password, name }) 
   return errors;
 };
 
-
-
 userMethods.register = async (req, res) => {
   const { rolID, username, email, password, name } = req.body;
 
@@ -174,10 +172,6 @@ userMethods.register = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 //authenticate
 userMethods.authenticate = (req, res) => {

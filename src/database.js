@@ -11,7 +11,7 @@ function connect() {
         if (err) {
            throw err;
         } else {
-            console.log('Connected to Database: ' + URI);
+            console.log( `Connected to Database: ${URI} `);
             db.on('open', (_) => console.log('Database is connected to'));
             db.on('error', (error) => console.log('Error:', error));
         }
