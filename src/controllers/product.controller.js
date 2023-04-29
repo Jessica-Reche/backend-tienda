@@ -64,7 +64,7 @@ function getProduct(_field) {
  * @returns  {Array} returns an array of objects with the filename and the link to the image
  */
 function convertGallery(gallery) {
-  if (gallery.length > 0) {
+  if (gallery.length) {
     const galleryArray = [];
     gallery.forEach((image) => {
       galleryArray.push({
@@ -74,7 +74,7 @@ function convertGallery(gallery) {
     });
     return galleryArray;
   }
-  return;
+  return [];
 }
 /**
  * Deletes the gallery of the database  and the files of the product from the server
@@ -246,9 +246,12 @@ productMethod.createProduct = async (req, res) => {
     const permission = acc.can(req.user.rol.name).createAny("product").granted;
     const { name, description, price, discount, stock, sku, category } = req.body;
     const verifySKU = await getProduct({ sku });
-    const gallery = req.files && req.files.gallery ? convertGallery(req.files.gallery) : [];
+    const gallery = req.files && req.files["gallery[]"] ? convertGallery(req.files["gallery[]"]) : [];
     const missingFieldsMsgs = [];
     const rating = req.body.rating ? req.body.rating : 0;
+
+
+    console.log(req.files);
 
     if (!permission)
       missingFieldsMsgs.push("You don't have permission to do this");
@@ -453,7 +456,8 @@ productMethod.updateProduct = async (req, res) => {
       if (req.body.sku) updatedProduct.sku = req.body.sku;
       if (req.body.rating) updatedProduct.rating = req.body.rating;
       if (req.body.category) updatedProduct.category = req.body.category;
-     
+      if (req.files.poster) 
+  
 
       await updatedProduct.save();
       return res.status(200).json({ message: "Product updated successfully", product: updatedProduct })

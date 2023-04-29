@@ -22,14 +22,14 @@ router
     auth,
     upload("products").fields([
       { name: "poster", maxCount: 1 },
-      { name: "gallery", maxCount: 5 },
+      { name: "gallery[]", maxCount: 5 },
     ]),
     createProduct
   )
   .delete("/deleteProduct/:id", auth, deleteProduct)
   .put("/updateProduct/:id", auth, updateProduct)
   .put("/updateProductPoster/:id", auth, upload('products').single("poster"), updateProductPoster)
-  .put("/updateProductGallery", auth, upload('products').array("gallery",5), updateProductGallery)
+  .put("/updateProductGallery", auth, upload('products').array("gallery[]",5), updateProductGallery)
   .delete("/deleteProductGaleryPhoto", auth, deleteProductGaleryPhoto);
 
 module.exports = router;
