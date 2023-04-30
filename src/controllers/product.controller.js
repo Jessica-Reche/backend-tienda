@@ -82,9 +82,10 @@ function convertGallery(gallery) {
  * @param {*} gallery
  */
 function deleteGallery(gallery) {
-  if (gallery.length > 0) {
+  if (gallery && gallery.length) {
     gallery.forEach((image) => fs.unlinkSync(image.path));
   }
+
 }
 /**
  * Deletes the gallery of the database and the files of the product
@@ -456,8 +457,7 @@ productMethod.updateProduct = async (req, res) => {
       if (req.body.sku) updatedProduct.sku = req.body.sku;
       if (req.body.rating) updatedProduct.rating = req.body.rating;
       if (req.body.category) updatedProduct.category = req.body.category;
-      if (req.files.poster) 
-  
+
 
       await updatedProduct.save();
       return res.status(200).json({ message: "Product updated successfully", product: updatedProduct })
@@ -498,9 +498,6 @@ productMethod.updateProductPoster = async (req, res) => {
       if (req.file) {
         fs.unlinkSync(req.file.path);
       }
-
-
-
       return sendErrorResponse(req, res, missingFieldsMsgs, 400);
     }
 
@@ -547,46 +544,65 @@ productMethod.updateProductPoster = async (req, res) => {
 
 
 productMethod.updateProductGallery = async (req, res) => {
-  const files = req.files;
-  const permission = acc.can(req.user.rol.name).updateAny("product").granted;
-  const { productID } = req.body;
-  const product = await getProduct({ _id: productID });
-  const missingFieldsMsgs = [];
-  var galleryDB = [];
+  console.log(req.files)
+  if (req.files) {
 
-  if ((files && !permission) || !permission)
-    missingFieldsMsgs.push("You don't have permission to do this");
-  if (!files || !files.length)
-    missingFieldsMsgs.push("You must upload a gallery");
-  if (!productID) missingFieldsMsgs.push("The productID is required");
-  if (!product) missingFieldsMsgs.push("No product found");
-  if (product && product.gallery.length + files.length > 5)
-    missingFieldsMsgs.push("You can upload 5 images max");
-  if (missingFieldsMsgs.length) {
-    deleteGallery(files);
-    return sendErrorResponse(req, res, missingFieldsMsgs, 400);
-  }
+    const permission = acc.can(req.user.rol.name).updateAny("product").granted;
 
-  try {
-    for (let i = 0; i < files.length; i++) {
-      galleryDB = product.gallery;
-      const newFile = {
-        filename: files[i].filename,
-        link: `/img/products/${files[i].filename}`,
-      };
-      galleryDB.push(newFile);
+    const { id } = req.params;
+    const product = await getProduct({ _id: id });
+    const missingFieldsMsgs = [];
+    var galleryDB = [];
+    const files = req.files;
+
+
+    if ((files && !permission) || !permission)
+      res.status(401).json({ message: "You don't have permission to do this" });
+
+  
+    if (!id) missingFieldsMsgs.push("The product id is required");
+    if (!product) missingFieldsMsgs.push("No product found");
+   // if (product && product.gallery.length + files.length > 5) missingFieldsMsgs.push("You can upload 5 images max");
+    if (missingFieldsMsgs.length) {
+      if (files)deleteGallery(files);
+      return sendErrorResponse(req, res, missingFieldsMsgs, 400);
     }
-    let galleryUpdated = await product.updateOne({ gallery: galleryDB });
 
-    if (galleryUpdated) {
-      return sendSuccessMessage(res, "Gallery was updated successfully");
+    try {
+    //actualizar la galeria en la base de datos con los nuevos archivos operador 
+    //spread antes crea un nuevo objeto con los archivos nuevos y los antiguos
+      //{filename: image.filename, link:/img/products/image.filename}}
+    
+      if (product.gallery) galleryDB = [...product.gallery];
+      files.forEach((image) => {
+        galleryDB.push({ 
+          filename: image.filename,
+          link: `/img/products/${image.filename}`
+        });
+      });
+      
+         
+      let galleryUpdated = await product.updateOne({ gallery: galleryDB });
+
+      if (galleryUpdated) {
+        return sendSuccessMessage(res, "Gallery was updated successfully");
+      }
+    } catch (error) {
+      console.log(error);
+      deleteGallery(files);
+      missingFieldsMsgs.push("There was a problem updating the gallery");
+      console.log(missingFieldsMsgs);
+      return sendErrorResponse(req, res, missingFieldsMsgs, 400);
     }
-  } catch (error) {
-    console.log(error);
-    deleteGallery(files);
-    missingFieldsMsgs.push("There was a problem updating the gallery");
-    return sendErrorResponse(req, res, missingFieldsMsgs, 400);
-  }
+  } else {
+    return sendErrorResponse(
+      req,
+      res,
+      "There was a problem updating the gallery, missing fields",
+      400
+    );
+
+  };
 };
 
-module.exports = productMethod;
+  module.exports = productMethod;
