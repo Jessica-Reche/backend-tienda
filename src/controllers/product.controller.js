@@ -569,10 +569,7 @@ productMethod.updateProductGallery = async (req, res) => {
     }
 
     try {
-    //actualizar la galeria en la base de datos con los nuevos archivos operador 
-    //spread antes crea un nuevo objeto con los archivos nuevos y los antiguos
-      //{filename: image.filename, link:/img/products/image.filename}}
-    
+
       if (product.gallery) galleryDB = [...product.gallery];
       files.forEach((image) => {
         galleryDB.push({ 
