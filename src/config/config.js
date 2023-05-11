@@ -1,6 +1,4 @@
 
-
-
 const rols ={
   ADMIN: "admin",
   CLIENT: "client",

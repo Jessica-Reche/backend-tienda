@@ -1,5 +1,4 @@
 const { Schema, model } = require("mongoose");
-
 const rols = require("../config/config");
 
 const rolSchema = new Schema({
