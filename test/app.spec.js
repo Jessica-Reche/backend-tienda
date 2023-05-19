@@ -1,19 +1,14 @@
-const { token } = require('morgan');
 const request = require('../src/index');
 const supertest = require('supertest');
 const expect = require('chai').expect;
 
-describe('GET /', () => {
-
-
-    it('Testing route', (done) => {
+describe('ENDPOINTS', () => {
+    it('Testing products', (done) => {
         supertest(request)
             .get('/product/getProducts')
             .expect(200)
             .expect((response) => {
-                //console.log(response.body);
                 expect(response.body.status).to.be.true;
-                // expect(response.body.message).to.equal('Hello World');
             })
             .end((err, res) => {
                 if (err) return done(err);
@@ -22,7 +17,7 @@ describe('GET /', () => {
     });
 });
 
-it('Testing user', (done) => {
+it('Testing get users', (done) => {
     supertest(request)
         .get('/user/users')
         .expect(400)
@@ -39,7 +34,7 @@ it('Testing user', (done) => {
 });
 
 
-it('Testing user failed', (done) => {
+it('Testing login users failed', (done) => {
     supertest(request)
         .post('/user/login')
         .send({
@@ -56,11 +51,9 @@ it('Testing user failed', (done) => {
             if (err) return done(err);
             return done();
         });
-
-
-
 });
-it('Testing user sucess', (done) => {
+
+it('Testing login user sucess', (done) => {
     supertest(request)
         .post('/user/login')
         .send({
