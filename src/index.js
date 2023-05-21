@@ -1,5 +1,5 @@
 const app = require('./app')
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 require('./database');
 
 async function init(){
