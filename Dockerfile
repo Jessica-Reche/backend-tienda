@@ -1,4 +1,4 @@
-# imagen compatible con bycript
+# imagen base
 FROM node:14
 
 # Establecemos el directorio de trabajo dentro del contenedor
