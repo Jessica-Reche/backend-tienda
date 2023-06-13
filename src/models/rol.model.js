@@ -10,4 +10,4 @@ const rolSchema = new Schema({
   created_at: { type: Date, default: Date.now },
 });
 
-module.exports = model("Rol", rolSchema);
+module.exports = model("Rol", rolSchema); 
